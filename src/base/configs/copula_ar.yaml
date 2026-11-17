@@ -1,0 +1,8 @@
+# M3 Gaussian copula + per-feature AR marginals per group. Uses conditions: group, day of week, holiday flag.
+method: M3_copula_ar
+class: src.base.copula_ar.GaussianCopulaAR
+search:
+  p: [1, 7]
+  family: [empirical, parametric]
+  shrink: [0.0, 0.5]
+  ties: [randomized, midpoint]

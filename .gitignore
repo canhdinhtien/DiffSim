@@ -1,0 +1,9 @@
+/data
+
+/.venv
+
+/analysis/realdata-v1-eda/out
+
+*.npy
+
+*.npz

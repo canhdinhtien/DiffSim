@@ -1,0 +1,33 @@
+selection_criterion: 'per method: mean of ranks of the 4 validation metrics over its
+  trials (ties: discriminative); overall: same over the selected configs on validation'
+methods:
+  M2_var:
+    params:
+      p: 7
+      random_effect: mean_scale
+      seasonal: true
+      shrink: 0.0
+    val_mean_rank_within_method: 2.75
+    val_metrics:
+      discriminative: 0.20833333333333337
+      predictive: 0.06461332738399506
+      context_fid: 0.08924345870375844
+      correlational: 0.01860982272773981
+    n_trials: 36
+  M3_copula_ar:
+    params:
+      family: parametric
+      p: 1
+      shrink: 0.0
+      ties: randomized
+    val_mean_rank_within_method: 2.25
+    val_metrics:
+      discriminative: 0.1333333333333333
+      predictive: 0.06360063701868057
+      context_fid: 0.050888136806623914
+      correlational: 0.02137406449764967
+    n_trials: 16
+overall_val_mean_rank:
+  M3_copula_ar: 1.25
+  M2_var: 1.75
+overall_best: M3_copula_ar

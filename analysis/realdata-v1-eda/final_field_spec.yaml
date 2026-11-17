@@ -1,0 +1,107 @@
+# Final field spec for driver-tracking synthetic data, derived from realdata-v1 (MOCK) EDA.
+# role: identifier | condition | target | constraint (derived/aggregate that generated data must reproduce) | drop
+# Evidence keys refer to out/*.json produced by the scripts in this folder (see REPORT.md).
+version: 1
+source: data/mock/realdata-v1 (manifest label MOCK, generator gsm_core.mockgen.realdata v5)
+decision: "2026-11-17: user approved the MOCK car-fleet data as the generation reference (no bike data)"
+timezone: "Asia/Ho_Chi_Minh, all timestamps are ISO strings with +07:00 (02_relations.trips_tz, 03 n_not_07 = 0)"
+
+tables:
+  driver_profile:
+    grain: one row per driver (3000)
+    fields:
+      driver_id:       {role: identifier, dtype: string, notes: "PK; joins to every table 1:N; pseudonymise in outputs"}
+      vehicle_model:   {role: condition, dtype: category, values: [VF5, VF6, VF8, VF_e34], notes: "1:1 with vehicle_class (02_relations.profile_xtab)"}
+      fleet:           {role: condition, dtype: category, values: [station_charge, depot_charge], notes: "ADDED: charging regime; low-battery pings only in station_charge fleets (06_extra.battery_low)"}
+      declared_shift_window: {role: condition, dtype: "int[2] minutes since 00:00", notes: "ADDED; FIX parse JSON array; relation to observed first ping in 05_patterns.shift_vs_actual"}
+      seat_capacity:   {role: drop, notes: "REMOVED: deterministic from vehicle_model (VF5=4, others=5)"}
+      vehicle_class:   {role: drop, notes: "1:1 with vehicle_model; keep as lookup only (fare/commission rules keyed by class)"}
+
+  trips:
+    grain: one row per trip request (5,685,443; trip_id unique)
+    fields:
+      trip_id:        {role: identifier, dtype: string, notes: "PK; telemetry.trip_id references it (100% found)"}
+      driver_id:      {role: identifier, dtype: string}
+      status:         {role: target, dtype: category, values: [completed, cancelled], notes: "cancelled 5.02%"}
+      request_time:   {role: target, dtype: timestamp_tz, notes: "FIX parse; local hour = string[11:13]"}
+      assign_time:    {role: target, dtype: timestamp_tz, notes: "FIX: 0.086% earlier than request_time"}
+      pickup_time:    {role: target, dtype: timestamp_tz, notes: "null iff cancelled"}
+      complete_time:  {role: target, dtype: timestamp_tz, notes: "null iff cancelled"}
+      pickup_h3:      {role: target, dtype: "h3 string", unit: "H3 res 7 (NOT res 9)", notes: "FIX: coarser than telemetry; 97.5-98% of pings at pickup fall inside it (04_states.pickup_h3)"}
+      drop_h3:        {role: target, dtype: "h3 string", unit: "H3 res 7"}
+      distance_km:    {role: target, dtype: float, unit: km, notes: "0 for all cancelled"}
+      gross_vnd:      {role: target, dtype: int, unit: VND, notes: "~linear in distance per class, corr 0.85-0.86; 0 for cancelled"}
+      cancel_reason:  {role: target, dtype: category, values: [khach_doi_y, su_co_xe, khach_khong_den]}
+      commission_vnd: {role: constraint, dtype: int, unit: VND, notes: "REMOVED as target: = gross x 0.35 (A/B/C) or 0.40 (D_LUXURY)"}
+      duration_seconds: {role: constraint, dtype: int, unit: s, notes: "REMOVED: = complete_time - pickup_time (100%)"}
+      rush_hour:      {role: constraint, dtype: bool, notes: "REMOVED: = hour(complete_time) in {6,7,8,16,17,18} (100%)"}
+      cancelled_by:   {role: constraint, dtype: category, notes: "REMOVED: determined by cancel_reason (khach_doi_y->customer, others->driver)"}
+      service_type:   {role: drop, notes: "REMOVED: constant 'car'"}
+
+  telemetry_ping:
+    grain: one ping per driver (141,758,183 over 123 daily files, no missing day)
+    sampling: "irregular; per-driver inter-ping dt see REPORT section 3"
+    fields:
+      driver_id:   {role: identifier, dtype: string}
+      occurred_at: {role: target, dtype: timestamp_tz, notes: "FIX parse; sort by (driver_id, occurred_at)"}
+      trip_id:     {role: target, dtype: "string|null", notes: "ADDED: links ping to trip; non-null only between pickup and complete (+~4% pre-pickup)"}
+      lat:         {role: target, dtype: float, unit: deg, notes: "sensitive; Hanoi bbox"}
+      lng:         {role: target, dtype: float, unit: deg}
+      speed_kmh:   {role: target, dtype: float, unit: km/h, notes: "FIX: speed=0 pings still move ~360 m between pings (04_states.stationary_jitter)"}
+      odometer_km: {role: target, dtype: float, unit: km, notes: "monotone across days (06_extra.cross_day_continuity)"}
+      battery_level_pct: {role: target, dtype: float, unit: "%", notes: "no CHARGING status; charging = overnight jumps"}
+      gear:        {role: target, dtype: category, values: [D, P], notes: "ADDED (optional): P ~ parked/stop; identical to charging_status IDLE"}
+      door_lock_status: {role: target, dtype: category, values: [LOCKED, UNLOCKED], notes: "ADDED (optional): unlocked at every stop"}
+      current_hex_h3_res9: {role: constraint, dtype: "h3 string", notes: "REMOVED as target: = latlng_to_cell(lat,lng,9) 100%"}
+      heading_deg: {role: constraint, dtype: float, unit: deg, notes: "REMOVED as target: = bearing between consecutive fixes (median error ~0.02 deg)"}
+      remaining_range_km: {role: constraint, dtype: float, unit: km, notes: "REMOVED as target: = battery_pct x k(model), R^2 = 1.0 (06_extra.range_vs_battery_by_model)"}
+      seat_occupancy.any_passenger_seat: {role: constraint, dtype: bool, notes: "REMOVED: = trip_id IS NOT NULL (0 mismatches over all pings)"}
+      seat_occupancy.driver: {role: drop, notes: "REMOVED: constant true"}
+      charging_status: {role: drop, notes: "= gear (P<->IDLE); never CHARGING"}
+      phone_connectivity_lost: {role: drop, notes: "constant false — no GPS-loss label"}
+      trunk_status: {role: drop, notes: "constant CLOSED"}
+      ping_id: {role: drop, notes: "surrogate key"}
+      vin: {role: drop, notes: "1 per driver-day; privacy"}
+      source_device: {role: drop, notes: "constant"}
+
+  public_driver_hex_tracking:
+    grain: "one row per ping-like event; per-day row count equals telemetry exactly (123/123 days)"
+    fields:
+      driver_id:              {role: identifier, dtype: string}
+      current_hex:            {role: target, dtype: "h3 res 9"}
+      entered_current_hex_at: {role: target, dtype: timestamp_tz}
+      last_seen_at:           {role: target, dtype: timestamp_tz}
+      tracking_status:        {role: target, dtype: category, values: [moving, idle, offline]}
+      stay_duration_seconds:  {role: constraint, dtype: int, unit: s, notes: "= last_seen_at - entered_current_hex_at (100%); shortlist name 'stay_duration' FIXED"}
+      init_hex:   {role: drop, notes: "REMOVED: identical to last_hex (100%)"}
+      last_hex:   {role: drop, notes: "REMOVED: previous hex, derivable from the sequence"}
+      created_at: {role: drop, notes: "REMOVED: = last_seen_at in 53%, otherwise row-insert time"}
+      updated_at: {role: drop, notes: "REMOVED: = last_seen_at (100%)"}
+      id:         {role: drop, notes: "surrogate key"}
+
+  driver_daily:   # one row per (driver_id, local_date); 3000 x 123 = 369,000, dense panel in all 5 daily tables
+    grain: driver-day
+    sources: [driver_statistic_daily, driver_orders_rush_hours, driver_online_hours_sap_id, driver_bike_stoppoints]
+    fields:
+      driver_id:   {role: identifier, dtype: string}
+      local_date:  {role: identifier, dtype: date, notes: "FIX: string -> date"}
+      online_time: {role: target, dtype: float, unit: hours, notes: "FIX: 59 rows > 24 h, floor at 3.0 h; source driver_online_hours_sap_id"}
+      completed_count: {role: constraint, dtype: int, notes: "= count completed trips (100%) = total_order"}
+      cancelled_count: {role: constraint, dtype: int, notes: "FIX: equals trips-derived cancels in only 90.2% of driver-days"}
+      total_request_calculate_accept: {role: target, dtype: int, notes: "ADDED: only source of offered-request volume (>= accepted)"}
+      total_order:     {role: constraint, dtype: int, notes: "= completed_count; source driver_orders_rush_hours"}
+      total_order_rush_hour: {role: constraint, dtype: int, notes: "= completed trips with rush_hour (100%)"}
+      total_fee:       {role: constraint, dtype: int, unit: VND, notes: "= sum gross_vnd of completed trips (100%)"}
+      commission:      {role: constraint, dtype: int, unit: VND, notes: "= sum commission_vnd (within 1 VND per trip)"}
+      total_fee_rush_hour:   {role: constraint, dtype: int, unit: VND}
+      commission_rush_hour:  {role: constraint, dtype: int, unit: VND}
+      total_stoppoints:          {role: target, dtype: int, notes: "ADDED: needed for rush<=total check; ~1.25 x completed, meaning unclear (open question)"}
+      total_stoppoints_rush_hour: {role: target, dtype: int, notes: "<= total_stoppoints (100%)"}
+    removed:
+      accepted_count: "= completed_count + cancelled_count (100%)"
+      total_request_calculate_complete: "= accepted_count (100%)"
+      schedule_date: "= local_date (100%)"
+      driver_type: "constant 'car'"
+      "*_normal_hour (4 fields)": "= total - rush (100%)"
+      "revenue_not_relate_driver (+rush/normal)": "= total_fee - commission (100%)"
+      driver_income_daily: "entire table: commission/total_order/total_fee/revenue_not_relate_driver identical to driver_orders_rush_hours (100%); avg_daily_revenue = total_fee/total_order (100%); total_core_order ~0.90 x total_order in every class"

@@ -1,0 +1,8 @@
+# M2 pooled VAR(p) per vehicle_model x fleet group. Uses conditions: group, day of week, holiday flag.
+method: M2_var
+class: src.base.var_sarima.PooledVAR
+search:
+  p: [1, 2, 7]
+  seasonal: [true, false]
+  shrink: [0.0, 0.5]
+  random_effect: ["off", mean, mean_scale]

@@ -1,0 +1,42 @@
+[project]
+name = "time-series-generation"
+version = "0.1.0"
+description = "A Python package for generating synthetic time series data using various methods."
+readme = "README.md"
+# TensorFlow 2.x (TimeGAN, TimeVAE) has no wheels for Python 3.14 yet
+requires-python = ">=3.12,<3.14"
+license = { text = "MIT" }
+authors = [
+  { name = "Dinh Tien Canh", email = "canhva20047@gmail.com" }
+]
+dependencies = [
+    "numpy>=1.26",
+    "tensorflow>=2.16",
+    # Keras 2 for TimeGAN's tf.compat.v1 RNN cells (removed in Keras 3); enabled via TF_USE_LEGACY_KERAS=1
+    "tf-keras>=2.16",
+    "torch>=2.2",
+    "einops>=0.7",
+    "scipy>=1.11",
+    "tqdm>=4.36.1",
+    "pandas>=2.1",
+    "pyarrow>=14",
+    "duckdb>=1.0",
+    "h3>=4.0",
+    "scikit-learn>=1.3",
+    "joblib>=1.3",
+    "matplotlib>=3.8",
+    "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=7.0",
+  "ruff>=0.1.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+# src/TimeGAN imports its own top-level `utils`, which clashes with the repo `utils/` package in one process:
+# run it separately with `uv run pytest src/TimeGAN`.
+testpaths = ["tests", "src/base"]
+addopts = "-p no:cacheprovider"

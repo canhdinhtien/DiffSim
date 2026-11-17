@@ -1,0 +1,292 @@
+{
+ "protocol": {
+  "real": "test windows (600 drivers x 4 non-overlapping 28-day windows)",
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "n_samples": 2400
+ },
+ "methods": {
+  "M2_var": {
+   "params": {
+    "p": 7,
+    "random_effect": "mean_scale",
+    "seasonal": true,
+    "shrink": 0.0
+   },
+   "discriminative": {
+    "mean": 0.2072916666666667,
+    "std": 0.023844839879707477,
+    "per_seed": [
+     0.2,
+     0.172917,
+     0.214583,
+     0.210417,
+     0.238542
+    ]
+   },
+   "predictive": {
+    "mean": 0.06474286764860153,
+    "std": 0.0002175888290292496,
+    "per_seed": [
+     0.064792,
+     0.065023,
+     0.064521,
+     0.064853,
+     0.064525
+    ]
+   },
+   "context_fid": {
+    "mean": 0.07132654529518934,
+    "std": 0.0034943961119190525,
+    "per_seed": [
+     0.072423,
+     0.067786,
+     0.07302,
+     0.075699,
+     0.067705
+    ]
+   },
+   "correlational": {
+    "mean": 0.016261936388909815,
+    "std": 0.004655405184274832,
+    "per_seed": [
+     0.01792,
+     0.016743,
+     0.015459,
+     0.022004,
+     0.009184
+    ]
+   },
+   "runtime": {
+    "fit_s": 0.3862556799984304,
+    "sample_s": 0.4192490399989765,
+    "peak_mem_mb": 62.8751895904541,
+    "metric_s": 309.4480091200006
+   },
+   "constraints_raw_model_output": {
+    "online_le_24h": 0.9999404761904762,
+    "counts_nonneg": 0.8010565476190477,
+    "counts_integer": 0.0,
+    "rush_le_total_stops": 0.986889880952381,
+    "offered_ge_completed_plus_cancelled": 0.6993303571428572,
+    "completed_per_online_h_in_real_band": 0.972827380952381,
+    "corr_completed_online": 0.7885922518439896,
+    "mean_completed_per_online_h": 1.5654159776225205
+   },
+   "constraints_after_postprocess": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9721726190476191,
+    "corr_completed_online": 0.7878776562548617,
+    "mean_completed_per_online_h": 1.5653032232573207
+   },
+   "constraints_real_test": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9894196428571429,
+    "corr_completed_online": 0.8084771043947144,
+    "mean_completed_per_online_h": 1.5873015873015874
+   },
+   "memorization": {
+    "nn_train_dist_fake_median": 1.045127638411328,
+    "nn_train_dist_real_test_median": 1.034559950597453,
+    "exact_duplicate_rate": 0.0,
+    "share_fake_closer_than_real_p5": 0.04125
+   }
+  },
+  "M3_copula_ar": {
+   "params": {
+    "family": "parametric",
+    "p": 1,
+    "shrink": 0.0,
+    "ties": "randomized"
+   },
+   "discriminative": {
+    "mean": 0.196875,
+    "std": 0.018937144752810286,
+    "per_seed": [
+     0.219792,
+     0.1875,
+     0.214583,
+     0.184375,
+     0.178125
+    ]
+   },
+   "predictive": {
+    "mean": 0.0639061912894249,
+    "std": 0.00011551480850878928,
+    "per_seed": [
+     0.063928,
+     0.063737,
+     0.063911,
+     0.064062,
+     0.063893
+    ]
+   },
+   "context_fid": {
+    "mean": 0.03128315777041149,
+    "std": 0.0037150308586573503,
+    "per_seed": [
+     0.03697,
+     0.031376,
+     0.029796,
+     0.031527,
+     0.026746
+    ]
+   },
+   "correlational": {
+    "mean": 0.027800613082945347,
+    "std": 0.0029095211073372346,
+    "per_seed": [
+     0.025309,
+     0.024804,
+     0.027684,
+     0.031819,
+     0.029387
+    ]
+   },
+   "runtime": {
+    "fit_s": 12.095555540002533,
+    "sample_s": 2.004425579996314,
+    "peak_mem_mb": 66.09017715454101,
+    "metric_s": 301.1047195000021
+   },
+   "constraints_raw_model_output": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 0.9953273809523809,
+    "offered_ge_completed_plus_cancelled": 0.8110119047619048,
+    "completed_per_online_h_in_real_band": 0.9729166666666667,
+    "corr_completed_online": 0.7819896540120852,
+    "mean_completed_per_online_h": 1.5434903618094267
+   },
+   "constraints_after_postprocess": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9729166666666667,
+    "corr_completed_online": 0.7819896540120852,
+    "mean_completed_per_online_h": 1.5434903618094267
+   },
+   "constraints_real_test": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9894196428571429,
+    "corr_completed_online": 0.8084771043947144,
+    "mean_completed_per_online_h": 1.5873015873015874
+   },
+   "memorization": {
+    "nn_train_dist_fake_median": 1.0476174435879801,
+    "nn_train_dist_real_test_median": 1.034559950597453,
+    "exact_duplicate_rate": 0.0,
+    "share_fake_closer_than_real_p5": 0.03125
+   }
+  },
+  "REAL_train_windows": {
+   "params": {},
+   "discriminative": {
+    "mean": 0.01562500000000001,
+    "std": 0.007619134811629038,
+    "per_seed": [
+     0.01875,
+     0.014583,
+     0.005208,
+     0.013542,
+     0.026042
+    ]
+   },
+   "predictive": {
+    "mean": 0.0635653629899025,
+    "std": 3.932714373354352e-05,
+    "per_seed": [
+     0.06354,
+     0.063544,
+     0.063554,
+     0.063635,
+     0.063553
+    ]
+   },
+   "context_fid": {
+    "mean": 0.0121008466494824,
+    "std": 0.0014073472751110377,
+    "per_seed": [
+     0.011458,
+     0.012069,
+     0.010153,
+     0.013044,
+     0.013781
+    ]
+   },
+   "correlational": {
+    "mean": 0.015258734673261642,
+    "std": 0.0034174936170216896,
+    "per_seed": [
+     0.014411,
+     0.013326,
+     0.019152,
+     0.018341,
+     0.011063
+    ]
+   },
+   "runtime": {
+    "fit_s": 0.37436578000197185,
+    "sample_s": 1.8799997633323074e-06,
+    "peak_mem_mb": 3.794830322265625,
+    "metric_s": 296.37330055999917
+   },
+   "constraints_raw_model_output": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9902827380952381,
+    "corr_completed_online": 0.8042688274357964,
+    "mean_completed_per_online_h": 1.5873015873015872
+   },
+   "constraints_after_postprocess": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9902827380952381,
+    "corr_completed_online": 0.8042688274357964,
+    "mean_completed_per_online_h": 1.5873015873015872
+   },
+   "constraints_real_test": {
+    "online_le_24h": 1.0,
+    "counts_nonneg": 1.0,
+    "counts_integer": 1.0,
+    "rush_le_total_stops": 1.0,
+    "offered_ge_completed_plus_cancelled": 1.0,
+    "completed_per_online_h_in_real_band": 0.9894196428571429,
+    "corr_completed_online": 0.8084771043947144,
+    "mean_completed_per_online_h": 1.5873015873015874
+   },
+   "memorization": {
+    "nn_train_dist_fake_median": 6.721133275684106e-08,
+    "nn_train_dist_real_test_median": 1.034559950597453,
+    "exact_duplicate_rate": 1.0,
+    "share_fake_closer_than_real_p5": 1.0
+   }
+  }
+ }
+}
