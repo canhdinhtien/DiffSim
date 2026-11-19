@@ -1,11 +1,8 @@
-# Statistical baselines (method 1 of 8) on S1 (driver x day): BASELINE_REPORT
+# Statistical baselines on S1 (driver x day): BASELINE_REPORT
 
-Data: MOCK `data/mock/realdata-v1`, the accepted reference. All numbers below are copied from `trials.csv`,
-`best_params.yaml` and `final_metrics.json` in this folder. Reproduce: see `src/base/README.md` (one command).
+Data: MOCK `data/mock/realdata-v1`
 
-> **Scope change.** M1 (block bootstrap) was dropped. It stores and resamples real train data, so it is not a
-> generative model. This report covers **M2 and M3 only**. M1's old results exist only in `_archive_with_m1/`, and
-> the removal is documented in `M1_REMOVAL_MANIFEST.md`.
+Reproduce: see `src/base/README.md`
 
 ## 1. Data protocol (shared with all methods: `src/data/realdata_v1.py`)
 

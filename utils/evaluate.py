@@ -5,7 +5,7 @@ import time
 import numpy as np
 import torch
 
-from utils.catext_fid import Context_FID
+from utils.context_fid import Context_FID
 from utils.cross_correation import correlational_score
 from utils.discriminative_metric import discriminative_score_metrics
 from utils.predictive_metric import predictive_score_metrics
